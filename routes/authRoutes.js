@@ -69,13 +69,14 @@ router.post('/login', async (req, res) => {
             expiresIn: '30d'
         });
 
+        // Return the token and user details
         res.json({
-            token,
+            token,  // Send token once
             user: {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role // Return the role to the client
+                role: user.role  // Return the role to the client
             }
         });
     } catch (error) {

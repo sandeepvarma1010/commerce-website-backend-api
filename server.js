@@ -6,13 +6,17 @@ const productRoutes = require('./routes/productRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const { protect, admin } = require('./middleware/authMiddleware');
+const cors = require('cors');
 
 dotenv.config();
 
 const app = express();
 
-const cors = require('cors');
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3001', // Allow only your frontend origin
+  credentials: true, // Allow credentials to be sent
+}));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -33,7 +37,7 @@ mongoose.connect(process.env.MONGO_URI)
     .catch((err) => console.log('MongoDB connection failed:', err));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(3000, () => {
     console.log(`Server running on port ${PORT}`);
 });
 

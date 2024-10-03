@@ -23,28 +23,28 @@ router.get('/:userId', async (req, res) => {
  // Add product to cart
  router.post('/:userId', async (req, res) => {
    const { productId, quantity } = req.body;
+
    try {
-     let cart = await Cart.findOne({ userId: req.params.userId });
+     const userId = req.params.userId;  // Extract userId from route params
      const product = await Product.findById(productId);
 
      if (!product) {
        return res.status(404).json({ message: 'Product not found' });
      }
 
+     let cart = await Cart.findOne({ userId: userId });
      if (!cart) {
-       // Create new cart for this user
        cart = new Cart({
-         userId: req.params.userId,
+         userId,
          products: [{ productId, quantity }],
          totalPrice: product.price * quantity
        });
      } else {
-       // Check if the product already exists in the cart
        const existingProduct = cart.products.find(p => p.productId.toString() === productId);
        if (existingProduct) {
-         existingProduct.quantity += quantity; // Increase quantity if it exists
+         existingProduct.quantity += quantity;
        } else {
-         cart.products.push({ productId, quantity }); // Add new product to cart
+         cart.products.push({ productId, quantity });
        }
        cart.totalPrice += product.price * quantity;
      }
@@ -52,8 +52,7 @@ router.get('/:userId', async (req, res) => {
      await cart.save();
      res.json(cart);
    } catch (err) {
-     console.error('Error adding product to cart:', err.message);
-     res.status(500).json({ message: 'Server error', error: err.message });
+     res.status(500).json({ message: 'Error adding product to cart', error: err.message });
    }
  });
 
